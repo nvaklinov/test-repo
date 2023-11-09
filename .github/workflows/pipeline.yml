@@ -33,3 +33,13 @@ jobs:
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Fill in the new image ID in the ECS task definition
+      id: task-def
+      run: |
+        TASK_DEF=$(sed -e "s|IMAGE_URL|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" ../../task-def.json)
+        echo "::set-output name=task_definition::$TASK_DEF"
+
+    - name: Deploy image to Amazon ECS
+      run: |
+        aws ecs update-service --cluster test --service flask-service --task-definition $(echo ${{ steps.task-def.outputs.task_definition }})
