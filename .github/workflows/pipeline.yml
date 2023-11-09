@@ -34,12 +34,10 @@ jobs:
         docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: Fill in the new image ID in the ECS task definition
-      id: task-def
+    - name: Register task definition
       run: |
-        TASK_DEF=$(sed -e "s|IMAGE_URL|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" task-def.json)
-        echo "::set-output name=task_definition::$TASK_DEF"
+        aws ecs register-task-definition --cli-input-json file://task-def.json
 
-    - name: Deploy image to Amazon ECS
-      run: |
-        aws ecs update-service --cluster test --service flask-service --task-definition $(echo ${{ steps.task-def.outputs.task_definition }})
+    - name: Deploy to Amazon ECS
+      run: |   
+       aws ecs create-service --cluster test --service-name flask-service --task-definition flask --launch-type FARGATE --desired-count 1 --network-configuration "awsvpcConfiguration={subnets=[subnet-0209371230118cce6,subnet-0a2f8b2e5fca464e5],securityGroups=[sg-0b8d178ae0fc9a1a4],assignPublicIp=ENABLED}" --region eu-central-1 
