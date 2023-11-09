@@ -8,10 +8,15 @@ terraform {
 }
 
 provider "aws" {
-  region="eu-central-1"
+  region = local.region
 }
 
 module "ecr" {
   source = "../modules/ecr"
-  env = "prod"
+  env = local.env
+}
+
+module "vpc" {
+  source = "../modules/vpc"
+  env = local.env
 }

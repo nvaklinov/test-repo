@@ -1,17 +1,22 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "5.24.0"
     }
   }
 }
 
 provider "aws" {
-  region="eu-central-1"
+  region = local.region
 }
 
 module "ecr" {
   source = "../modules/ecr/"
-  env = "dev"
+  env    = local.env
+}
+
+module "vpc" {
+  source = "../modules/vpc"
+  env    = local.env
 }
