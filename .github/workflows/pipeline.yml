@@ -37,7 +37,7 @@ jobs:
     - name: Fill in the new image ID in the ECS task definition
       id: task-def
       run: |
-        TASK_DEF=$(sed -e "s|IMAGE_URL|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" ../../task-def.json)
+        TASK_DEF=$(sed -e "s|IMAGE_URL|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" task-def.json)
         echo "::set-output name=task_definition::$TASK_DEF"
 
     - name: Deploy image to Amazon ECS
